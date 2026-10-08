@@ -1,0 +1,40 @@
+TREINAMENTO DE SEGURANÇA DA INFORMAÇÃO - SIGGO
+Pacote para publicar no domínio da Siggo
+
+CONTEÚDO
+- index.html: a página do treinamento (3 módulos, cada um com material, vídeo e perguntas; nota mínima de 70% por módulo).
+- media/: os três vídeos (senhas-fortes.mp4, phishing.mp4, links-anexos-dados.mp4).
+
+COMO PUBLICAR
+1. Copie a pasta inteira (index.html e a pasta media) para um servidor web da Siggo: IIS, Nginx, Apache, Azure Static Web Apps ou qualquer hospedagem de sites estáticos.
+2. Aponte o endereço desejado (por exemplo, treinamento.seudominio.com.br) para essa pasta. Use HTTPS.
+3. Confirme que o servidor entrega arquivos .mp4 (tipo video/mp4). Não é preciso banco de dados nem programa no servidor.
+4. Abra o endereço e teste: preencha nome e e-mail, assista ao primeiro vídeo até o fim e responda às perguntas.
+
+REGISTRO DE QUEM CONCLUIU (OPCIONAL)
+Sem configuração, a pessoa vê um comprovante no final (nome, e-mail, data e acertos) e copia para enviar à TI.
+
+Para o registro ser enviado sozinho, abra o index.html em um editor de texto, procure por "registroUrl" e cole entre as aspas o endereço que vai receber os dados.
+
+Exemplo com Power Automate:
+1. Crie um fluxo com o gatilho "Quando uma solicitação HTTP é recebida" e copie o URL gerado.
+2. O navegador envia o corpo como texto simples. No fluxo, leia os dados com json(triggerBody()).
+3. Grave os campos em uma lista do SharePoint ou em uma planilha do Excel. Use o e-mail como chave, para atualizar a linha da mesma pessoa a cada módulo.
+
+Campos enviados (JSON):
+- name, email: nome e e-mail digitados
+- startedAt: início do treinamento
+- firstCompletedAt: data da primeira conclusão (vazio até concluir os 3 módulos)
+- updatedAt: data do envio
+- modules: m1, m2 e m3, cada um com score (acertos), total e at (data)
+- attempts: quantas vezes a pessoa respondeu cada módulo
+
+Observações:
+- O navegador não consegue confirmar que o fluxo recebeu o envio. Por isso o comprovante continua disponível no final.
+- O endereço configurado fica visível para quem ler o código da página. Proteja o fluxo (por exemplo, validando o e-mail e o formato dos dados).
+- Nome e e-mail são dados pessoais (LGPD). Guarde em local com acesso restrito.
+- Não testado com o fluxo de vocês: faça um teste de ponta a ponta antes de divulgar.
+
+MANUTENÇÃO
+- Trocar um vídeo: substitua o arquivo na pasta media mantendo o mesmo nome.
+- Alterar textos e perguntas: edite o bloco MODULES dentro do index.html. A nota mínima está em PASS_RATE (0.7 = 70%).

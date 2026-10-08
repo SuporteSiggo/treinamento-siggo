@@ -1,0 +1,580 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Treinamento de Segurança da Informação | Siggo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap">
+<style>
+/* Layout: one centered column. A three-module stepper on top; each module runs material, video, questions. */
+:root {
+  --bg: #F3F6FA;
+  --surface: #FFFFFF;
+  --fg: #172B42;
+  --muted: #53667C;
+  --brand: #1F4670;
+  --accent: #2F6EA5;
+  --accent-fg: #FFFFFF;
+  --line: #D5DFEA;
+  --ok: #17703F;
+  --ok-bg: #E4F4EA;
+  --bad: #A8341F;
+  --bad-bg: #FBE9E4;
+  --warn-bg: #FFF1DE;
+  --warn-fg: #5A3300;
+  --chip: #FFFFFF;
+  --font: 'DM Sans', Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E1B2B; --surface: #15283D; --fg: #E6EDF5; --muted: #9DB0C5; --brand: #9CC4EA;
+    --accent: #5C9BD1; --accent-fg: #0B1826; --line: #27435F; --ok: #6FD39B; --ok-bg: #12382A;
+    --bad: #FF9C86; --bad-bg: #432019; --warn-bg: #3B2A12; --warn-fg: #FFD9A3; --chip: #FFFFFF; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E1B2B; --surface: #15283D; --fg: #E6EDF5; --muted: #9DB0C5; --brand: #9CC4EA;
+  --accent: #5C9BD1; --accent-fg: #0B1826; --line: #27435F; --ok: #6FD39B; --ok-bg: #12382A;
+  --bad: #FF9C86; --bad-bg: #432019; --warn-bg: #3B2A12; --warn-fg: #FFD9A3; --chip: #FFFFFF; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font); font-size: 18px; line-height: 1.5; padding-inline: 16px; padding-block: 24px 56px; }
+.wrap { max-width: 800px; margin-inline: auto; display: flex; flex-direction: column; gap: 20px; }
+header { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.logo { background: var(--chip); border-radius: 10px; padding: 6px 10px; display: flex; }
+.logo img { height: 36px; width: auto; display: block; }
+.kicker { font-size: 14px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 28px; display: flex; flex-direction: column; gap: 20px; }
+h1, h2 { margin: 0; color: var(--brand); text-wrap: balance; line-height: 1.15; }
+h1 { font-size: clamp(30px, 6vw, 42px); }
+h2 { font-size: clamp(22px, 4.5vw, 28px); }
+p { margin: 0; }
+.muted { color: var(--muted); }
+button { font: inherit; cursor: pointer; }
+.btn { background: var(--accent); color: var(--accent-fg); border: 2px solid transparent; border-radius: 12px; padding: 14px 24px; font-weight: 700; align-self: flex-start; }
+.btn:hover:not(:disabled) { filter: brightness(1.08); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn.ghost { background: transparent; color: var(--brand); border-color: var(--line); }
+button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+.stepper { display: flex; gap: 10px; flex-wrap: wrap; margin: 0; padding: 0; list-style: none; }
+.st { flex: 1 1 200px; display: flex; gap: 10px; align-items: center; border: 1px solid var(--line); background: var(--surface); border-radius: 12px; padding: 10px 14px; min-width: 0; }
+.st .n { flex: none; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: 14px; border: 2px solid var(--line); color: var(--muted); }
+.st b { display: block; font-size: 15px; line-height: 1.25; overflow-wrap: anywhere; }
+.st small { display: block; font-size: 13px; color: var(--muted); }
+.st.cur { border-color: var(--accent); }
+.st.cur .n { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); }
+.st.done { border-color: var(--ok); }
+.st.done .n { background: var(--ok-bg); border-color: var(--ok); color: var(--ok); }
+.st.done small { color: var(--ok); font-weight: 700; }
+
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 0; padding: 0; list-style: none; }
+.facts li { border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.facts b { font-size: 26px; color: var(--brand); font-variant-numeric: tabular-nums; }
+.facts span { font-size: 15px; color: var(--muted); }
+.route { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.route li { display: flex; gap: 12px; align-items: baseline; }
+.route b { color: var(--brand); flex: none; }
+
+.pills { display: flex; gap: 8px; flex-wrap: wrap; }
+.pill { font-size: 14px; font-weight: 700; padding: 4px 12px; border-radius: 99px; border: 1px solid var(--line); color: var(--muted); }
+.pill.cur { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+.pill.done { color: var(--ok); border-color: var(--ok); }
+
+.points { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; }
+.pt { border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.pt b { color: var(--brand); }
+.pt span { font-size: 16px; color: var(--muted); }
+.note { border-radius: 12px; padding: 14px 16px; background: var(--warn-bg); color: var(--warn-fg); font-weight: 500; }
+.vid { width: 100%; max-width: 100%; aspect-ratio: 16 / 9; background: #000; border-radius: 12px; display: block; }
+.hint { font-size: 15px; color: var(--muted); }
+
+.meta { display: flex; justify-content: space-between; gap: 12px; font-size: 15px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.bar { height: 8px; border-radius: 99px; background: var(--line); overflow: hidden; }
+.bar > i { display: block; height: 100%; background: var(--accent); border-radius: 99px; transition: width .25s; }
+.opts { display: flex; flex-direction: column; gap: 10px; }
+.opt { display: flex; gap: 14px; align-items: flex-start; text-align: left; width: 100%; background: var(--surface); color: var(--fg); border: 2px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+.opt:hover:not(:disabled) { border-color: var(--accent); }
+.opt:disabled { cursor: default; }
+.opt .k { flex: none; width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--line); display: grid; place-items: center; font-size: 14px; font-weight: 700; color: var(--muted); }
+.opt .t { min-width: 0; overflow-wrap: anywhere; }
+.opt.ok { border-color: var(--ok); background: var(--ok-bg); }
+.opt.bad { border-color: var(--bad); background: var(--bad-bg); }
+.opt.ok .k { border-color: var(--ok); color: var(--ok); }
+.opt.bad .k { border-color: var(--bad); color: var(--bad); }
+.tag { margin-left: auto; flex: none; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; padding-top: 4px; }
+.opt.ok .tag { color: var(--ok); }
+.opt.bad .tag { color: var(--bad); }
+.fb { border-radius: 12px; padding: 14px 16px; background: var(--bg); border: 1px solid var(--line); }
+.fb b.ok { color: var(--ok); } .fb b.bad { color: var(--bad); }
+
+.score { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.score b { font-size: clamp(48px, 12vw, 72px); line-height: 1; color: var(--brand); font-variant-numeric: tabular-nums; }
+.status { display: inline-block; align-self: flex-start; font-weight: 700; font-size: 15px; padding: 6px 12px; border-radius: 99px; }
+.status.pass { background: var(--ok-bg); color: var(--ok); }
+.status.fail { background: var(--bad-bg); color: var(--bad); }
+.track { position: relative; height: 14px; border-radius: 99px; background: var(--line); margin-top: 22px; }
+.track .fill { position: absolute; inset: 0 auto 0 0; border-radius: 99px; background: var(--accent); }
+.track .mark { position: absolute; top: -6px; bottom: -6px; width: 3px; background: var(--fg); border-radius: 2px; left: 70%; }
+.track .lbl { position: absolute; top: -26px; left: 70%; transform: translateX(-50%); font-size: 13px; font-weight: 700; color: var(--muted); white-space: nowrap; }
+.review { display: flex; flex-direction: column; gap: 14px; }
+.review h3 { margin: 0; font-size: 18px; color: var(--brand); }
+.rv { border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
+.rv .a { color: var(--ok); font-weight: 700; }
+.sum { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.sum th, .sum td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--line); font-size: 16px; }
+.sum th { color: var(--muted); font-weight: 700; font-size: 14px; }
+.form { display: flex; flex-direction: column; gap: 14px; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label { font-size: 15px; font-weight: 700; color: var(--brand); }
+.field input { font: inherit; color: var(--fg); background: var(--surface); border: 2px solid var(--line); border-radius: 12px; padding: 12px 14px; width: 100%; }
+.field input:focus-visible { outline: 3px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
+.field .err { font-size: 14px; color: var(--bad); min-height: 1.3em; }
+.privacy { font-size: 14px; color: var(--muted); }
+.comp { white-space: pre-wrap; overflow-wrap: anywhere; font: 15px/1.5 ui-monospace, Menlo, Consolas, monospace; background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; margin: 0; }
+.tablewrap { overflow-x: auto; }
+.tablewrap .sum { min-width: 560px; }
+.regstatus { font-size: 15px; font-weight: 500; }
+h3.sub { margin: 0; font-size: 18px; color: var(--brand); }
+@media (prefers-reduced-motion: reduce) { .bar > i { transition: none; } }
+</style>
+<style>html{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo"><img src="data:image/png;base64,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" alt="Siggo"></div>
+    <span class="kicker">Treinamento de Segurança da Informação</span>
+  </header>
+
+  <ol class="stepper" id="stepper" aria-label="Módulos do treinamento"></ol>
+
+  <section id="home" class="card" hidden>
+    <h1>Segurança da informação, na prática</h1>
+    <p class="muted">Três módulos curtos. Em cada um você lê o material, assiste ao vídeo e responde às perguntas.</p>
+    <ul class="facts">
+      <li><b>3</b><span>módulos em sequência</span></li>
+      <li><b>4</b><span>perguntas por módulo</span></li>
+      <li><b>70%</b><span>de acertos para avançar</span></li>
+    </ul>
+    <ul class="route">
+      <li><b>1.</b><span>Leia o material e assista ao vídeo até o final. As perguntas só abrem depois disso.</span></li>
+      <li><b>2.</b><span>Acerte pelo menos 3 de 4 perguntas para liberar o próximo módulo.</span></li>
+      <li><b>3.</b><span>Abaixo disso, volte ao material e refaça as perguntas, que mudam de ordem.</span></li>
+    </ul>
+    <form class="form" id="idform" novalidate>
+      <div class="field"><label for="f-name">Nome completo</label><input id="f-name" name="name" type="text" autocomplete="name" required><span class="err" id="e-name" aria-live="polite"></span></div>
+      <div class="field"><label for="f-email">E-mail</label><input id="f-email" name="email" type="email" autocomplete="email" inputmode="email" required><span class="err" id="e-email" aria-live="polite"></span></div>
+      <p class="privacy">Seu nome e e-mail são usados só para registrar a conclusão do treinamento.</p>
+      <p class="privacy" id="regnote"></p>
+      <div class="actions">
+        <button class="btn" id="go" type="submit">Começar</button>
+        <button class="btn ghost" id="reset" type="button" hidden>Recomeçar do zero</button>
+      </div>
+    </form>
+  </section>
+
+  <section id="module" class="card" hidden>
+    <div class="kicker" id="mkicker"></div>
+    <div class="pills" id="pills"></div>
+    <div id="panel" style="display:flex;flex-direction:column;gap:20px"></div>
+  </section>
+
+  <section id="final" class="card" hidden>
+    <span class="status pass">Treinamento concluído</span>
+    <h1>Você passou pelos três módulos</h1>
+    <p>Você atingiu a nota mínima de 70% em todos os módulos. Leve esses hábitos para o dia a dia e avise a TI sempre que desconfiar de algo.</p>
+    <table class="sum" id="sum"></table>
+    <p class="regstatus" id="regstatus" aria-live="polite"></p>
+    <h3 class="sub">Comprovante</h3>
+    <pre class="comp" id="comp"></pre>
+    <div class="actions">
+      <button class="btn" id="copy" type="button">Copiar comprovante</button>
+      <button class="btn ghost" id="restart" type="button">Refazer o treinamento</button>
+    </div>
+  </section>
+
+</div>
+
+<script>
+var PASS_RATE = 0.7; // nota mínima de cada módulo (70%)
+var KEY = 'siggo-seguranca-v2';
+var MODULES = [
+  {
+    title: 'Senhas fortes',
+    blurb: 'Sua senha é a chave de tudo o que você acessa no trabalho. Quatro hábitos deixam essa chave difícil de copiar.',
+    points: [
+      { h: 'Completa', p: '12 ou mais caracteres, com maiúsculas, minúsculas, números e símbolos. Exemplo ilustrativo: Cafe-Chuva-Violao-Nuvem#7. Não use essa.' },
+      { h: 'Única', p: 'Uma senha diferente para cada serviço. Nunca reutilize.' },
+      { h: 'Gerenciador', p: 'Gere e guarde as senhas num gerenciador aprovado pela empresa.' },
+      { h: 'Dois fatores', p: 'Ative a verificação em duas etapas sempre que existir.' }
+    ],
+    note: 'Nunca compartilhe sua senha com ninguém, nem com colegas ou com a TI.',
+    video: 'media/senhas-fortes.mp4',
+    questions: [
+      { q: 'Qual destas senhas é a mais forte?',
+        opts: ['123456', 'siggo2026', 'Cafe-Chuva-Violao-Nuvem#7', 'Maria15031990'], a: 2,
+        why: 'Ela é longa e mistura maiúsculas, minúsculas, número e símbolo, sem relação com dados pessoais.' },
+      { q: 'Por que não se deve usar a mesma senha em vários serviços?',
+        opts: ['Porque fica mais difícil de digitar', 'Porque, se um serviço vazar, os outros também ficam expostos', 'Porque os sites bloqueiam senhas repetidas', 'Não há problema nisso'], a: 1,
+        why: 'Golpistas testam senhas vazadas em outros serviços. Uma senha diferente por serviço limita o estrago.' },
+      { q: 'Para que serve a verificação em duas etapas?',
+        opts: ['Para trocar a senha a cada semana', 'Para que só a senha não seja suficiente para entrar na sua conta', 'Para deixar o login mais rápido', 'Para esconder o e-mail do usuário'], a: 1,
+        why: 'Mesmo que a senha vaze, quem não tem o seu segundo fator, como o código no celular, não consegue entrar.' },
+      { q: 'Alguém liga dizendo ser da TI e pede sua senha para resolver algo urgente. O que fazer?',
+        opts: ['Passar a senha, porque é da TI', 'Passar só metade da senha', 'Não passar a senha e avisar a TI pelo canal oficial', 'Passar e trocar a senha depois'], a: 2,
+        why: 'Ninguém legítimo, nem a TI, precisa saber a sua senha. Pedidos assim são um sinal clássico de golpe.' }
+    ]
+  },
+  {
+    title: 'Phishing',
+    blurb: 'Phishing é a mensagem falsa que imita uma empresa ou pessoa conhecida para roubar dados. Cinco sinais ajudam a reconhecer.',
+    points: [
+      { h: 'Remetente estranho', p: 'Endereço diferente do oficial ou com letras trocadas.' },
+      { h: 'Urgência ou ameaça', p: 'Pressa e medo para você agir sem pensar.' },
+      { h: 'Texto descuidado', p: 'Erros de português e saudação genérica.' },
+      { h: 'Pedido de dados', p: 'Senha, código ou cartão não se pedem por e-mail.' },
+      { h: 'Anexo inesperado', p: 'Fatura ou nota que você não esperava.' }
+    ],
+    note: 'Na dúvida, não clique e não responda: confirme por outro canal, como telefone ou chat da empresa.',
+    video: 'media/phishing.mp4',
+    questions: [
+      { q: 'O assunto do e-mail diz "URGENTE: sua conta será bloqueada hoje". O que essa pressa costuma indicar?',
+        opts: ['Que o assunto é importante e deve ser resolvido na hora', 'Uma tática de phishing para você agir sem pensar', 'Que o e-mail veio da TI', 'Que o link do e-mail é seguro'], a: 1,
+        why: 'Golpistas usam ameaças e prazos curtos para que você aja antes de desconfiar.' },
+      { q: 'Qual destes é um sinal de e-mail de phishing?',
+        opts: ['Remetente com endereço parecido com o oficial, mas com letras trocadas', 'E-mail de um colega que você conhece, sobre um assunto esperado', 'Mensagem com seu nome completo sobre um projeto em andamento', 'Aviso interno publicado no mural oficial da empresa'], a: 0,
+        why: 'Confira sempre o endereço completo do remetente: domínios com letras trocadas imitam endereços oficiais.' },
+      { q: 'Qual destes pedidos por e-mail deve ser tratado como golpe?',
+        opts: ['Confirmar sua senha e o código de verificação', 'Avisar que a reunião mudou de sala', 'Enviar o relatório que você pediu a um colega', 'Compartilhar a ata da reunião de ontem'], a: 0,
+        why: 'Nenhuma empresa séria pede senha, código ou dados de cartão por e-mail.' },
+      { q: 'Na dúvida sobre um e-mail suspeito, o mais seguro é:',
+        opts: ['Responder perguntando se é verdade', 'Clicar no link só para conferir', 'Não clicar nem responder, confirmar por outro canal e avisar a TI', 'Encaminhar para os colegas darem opinião'], a: 2,
+        why: 'Confirmar por outro canal e avisar a TI evita o clique e ajuda a proteger os demais colegas.' }
+    ]
+  },
+  {
+    title: 'Links, dados e incidentes',
+    blurb: 'Links e anexos são a porta de entrada mais comum. Cuidar dos dados e avisar cedo fecha o ciclo.',
+    points: [
+      { h: 'Links: passe o mouse', p: 'Sem clicar, veja o endereço real na barra do navegador. No celular, mantenha o dedo pressionado.' },
+      { h: 'Links: confira o endereço', p: 'Procure letras trocadas, domínios estranhos e links encurtados.' },
+      { h: 'Anexos: desconfie', p: 'Não abra arquivos .exe, .zip ou documentos que pedem para ativar macros.' },
+      { h: 'Dados: bloqueie a tela', p: 'Ao sair da mesa, bloqueie o computador.' },
+      { h: 'Dados: só o necessário', p: 'Envie dados só a quem precisa, por canais aprovados. A LGPD protege os dados de clientes e colegas.' },
+      { h: 'Incidente: pare e avise', p: 'Não clique nem responda, registre a mensagem e avise a TI pelo canal oficial. Avisar cedo limita o dano, mesmo que você já tenha clicado.' }
+    ],
+    note: 'Recebeu algo inesperado? Confirme com quem enviou, por outro canal, antes de abrir.',
+    video: 'media/links-anexos-dados.mp4',
+    questions: [
+      { q: 'O que fazer antes de clicar em um link recebido por e-mail?',
+        opts: ['Clicar rápido, antes que o link expire', 'Passar o mouse por cima e conferir o endereço real', 'Abrir em uma janela anônima', 'Confiar no texto do link'], a: 1,
+        why: 'O texto do link pode esconder outro endereço. Passar o mouse mostra o destino real; no celular, mantenha o dedo pressionado.' },
+      { q: 'Você recebeu um anexo .zip inesperado. O que é mais seguro fazer?',
+        opts: ['Abrir para ver o que é', 'Salvar no computador para abrir depois', 'Não abrir e confirmar com quem enviou, por outro canal', 'Encaminhar para a TI sem avisar ninguém'], a: 2,
+        why: 'Anexos inesperados, como .zip, .exe ou documentos que pedem macros, podem instalar programas maliciosos.' },
+      { q: 'Você vai se afastar da mesa por alguns minutos. O que fazer?',
+        opts: ['Deixar como está, é rápido', 'Bloquear o computador', 'Diminuir o brilho da tela', 'Fechar só o navegador'], a: 1,
+        why: 'Bloquear a tela impede que outras pessoas acessem seus sistemas e os dados de clientes e colegas.' },
+      { q: 'Você clicou sem querer em um link suspeito. O que fazer?',
+        opts: ['Não contar a ninguém para evitar problemas', 'Avisar a TI imediatamente', 'Apagar o e-mail e esquecer o assunto', 'Esperar para ver se algo acontece'], a: 1,
+        why: 'Avisar cedo ajuda a limitar o dano. A TI orienta os próximos passos antes que o problema cresça.' }
+    ]
+  }
+];
+
+var $ = function (id) { return document.getElementById(id); };
+var S = { view: 'home', m: 0, step: 'material', run: null, passed: {}, attempt: 1, attempts: {}, person: null, firstCompletedAt: null, saved: 'idle' };
+// CONFIGURAÇÃO (TI): endereço que recebe o registro de conclusão (por exemplo, o URL do gatilho HTTP de um fluxo do Power Automate).
+// Deixe vazio para não enviar nada: nesse caso a pessoa copia o comprovante e envia à TI.
+var CONFIG = { registroUrl: '' };
+
+function load() {
+  try {
+    var v = JSON.parse(localStorage.getItem(KEY) || '{}');
+    if (v && typeof v === 'object') {
+      if (v.passed && typeof v.passed === 'object') S.passed = v.passed;
+      if (v.attempts && typeof v.attempts === 'object') S.attempts = v.attempts;
+      if (v.person && typeof v.person === 'object') S.person = v.person;
+      if (typeof v.firstCompletedAt === 'string') S.firstCompletedAt = v.firstCompletedAt;
+    }
+  } catch (e) {}
+}
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify({ passed: S.passed, attempts: S.attempts, person: S.person, firstCompletedAt: S.firstCompletedAt })); } catch (e) {}
+}
+function shuffle(a) {
+  var r = a.slice();
+  for (var i = r.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1)); var t = r[i]; r[i] = r[j]; r[j] = t;
+  }
+  return r;
+}
+function needFor(n) { return Math.ceil(PASS_RATE * n - 1e-9); }
+function firstOpen() {
+  for (var i = 0; i < MODULES.length; i++) if (!S.passed[i]) return i;
+  return MODULES.length;
+}
+function showView(v) {
+  S.view = v;
+  ['home', 'module', 'final'].forEach(function (id) { $(id).hidden = id !== v; });
+  renderStepper();
+  window.scrollTo(0, 0);
+}
+function renderStepper() {
+  var open = firstOpen(), html = '';
+  MODULES.forEach(function (m, i) {
+    var cls = 'st', label;
+    if (S.passed[i]) { cls += ' done'; label = 'Concluído · ' + S.passed[i].score + ' de ' + S.passed[i].total; }
+    else if (S.view === 'module' && S.m === i) { cls += ' cur'; label = 'Em andamento'; }
+    else if (i === open) { label = 'Próximo'; }
+    else { label = 'Bloqueado'; }
+    html += '<li class="' + cls + '"' + (cls.indexOf('cur') > -1 ? ' aria-current="step"' : '') + '><span class="n">' + (i + 1) + '</span><span><b>' + m.title + '</b><small>' + label + '</small></span></li>';
+  });
+  $('stepper').innerHTML = html;
+}
+function stepsOf(m) { return MODULES[m].video ? ['material', 'video', 'quiz'] : ['material', 'quiz']; }
+var STEP_LABEL = { material: 'Material', video: 'Vídeo', quiz: 'Perguntas' };
+function renderPills() {
+  var steps = stepsOf(S.m), cur = S.step === 'result' ? 'quiz' : S.step, idx = steps.indexOf(cur), html = '';
+  steps.forEach(function (s, i) {
+    html += '<span class="pill ' + (i < idx ? 'done' : (i === idx ? 'cur' : '')) + '">' + (i + 1) + '. ' + STEP_LABEL[s] + '</span>';
+  });
+  $('pills').innerHTML = html;
+}
+function openModule(i) {
+  S.m = i; S.step = 'material'; S.attempt = 1;
+  $('mkicker').textContent = 'Módulo ' + (i + 1) + ' de ' + MODULES.length;
+  showView('module');
+  renderStep();
+}
+function renderStep() {
+  renderPills();
+  if (S.step === 'material') renderMaterial();
+  else if (S.step === 'video') renderVideo();
+  else if (S.step === 'quiz') { renderQuizShell(); renderQ(); }
+  else renderResult();
+}
+function renderMaterial() {
+  var m = MODULES[S.m], p = $('panel'), html = '<h2>' + m.title + '</h2><p class="muted">' + m.blurb + '</p><div class="points">';
+  m.points.forEach(function (x) { html += '<div class="pt"><b>' + x.h + '</b><span>' + x.p + '</span></div>'; });
+  html += '</div><p class="note">' + m.note + '</p>';
+  if (S.attempt > 1) html += '<p class="hint">Tentativa ' + S.attempt + '. Releia o material com calma antes de seguir.</p>';
+  html += '<button class="btn" id="cont" type="button">' + (m.video ? 'Continuar para o vídeo' : 'Ir para as perguntas') + '</button>';
+  p.innerHTML = html;
+  $('cont').addEventListener('click', function () { S.step = m.video ? 'video' : 'quiz'; if (S.step === 'quiz') startQuiz(); else renderStep(); window.scrollTo(0, 0); });
+}
+function renderVideo() {
+  var m = MODULES[S.m], p = $('panel');
+  p.innerHTML = '<h2>Vídeo: ' + m.title + '</h2>' +
+    '<video class="vid" id="vid" controls playsinline preload="metadata" src="' + m.video + '"></video>' +
+    '<p class="hint" id="vhint">Assista até o final para liberar as perguntas.</p>' +
+    '<div class="actions"><button class="btn" id="toq" type="button" disabled>Ir para as perguntas</button><button class="btn ghost" id="back" type="button">Voltar ao material</button></div>';
+  var v = $('vid'), toq = $('toq');
+  function unlock(msg) { toq.disabled = false; $('vhint').textContent = msg; toq.focus(); }
+  v.addEventListener('ended', function () { unlock('Vídeo concluído. As perguntas estão liberadas.'); });
+  v.addEventListener('error', function () { unlock('Não foi possível reproduzir o vídeo neste navegador. Você pode seguir para as perguntas.'); });
+  toq.addEventListener('click', function () { S.step = 'quiz'; startQuiz(); window.scrollTo(0, 0); });
+  $('back').addEventListener('click', function () { S.step = 'material'; renderStep(); });
+}
+function startQuiz() {
+  var m = MODULES[S.m];
+  S.step = 'quiz';
+  S.run = {
+    i: 0, score: 0, miss: [], locked: false,
+    qs: shuffle(m.questions).map(function (q) {
+      return { q: q.q, why: q.why, opts: shuffle(q.opts.map(function (t, k) { return { t: t, ok: k === q.a }; })) };
+    })
+  };
+  renderPills(); renderQuizShell(); renderQ();
+}
+function renderQuizShell() {
+  $('panel').innerHTML = '<div class="meta"><span id="progress"></span><span id="live-score"></span></div>' +
+    '<div class="bar" aria-hidden="true"><i id="bar" style="width:0%"></i></div>' +
+    '<h2 id="qtext"></h2><div class="opts" id="opts"></div><div class="fb" id="fb" hidden aria-live="polite"></div>' +
+    '<button class="btn" id="next" type="button" hidden></button>';
+  $('next').addEventListener('click', function () {
+    S.run.i++;
+    if (S.run.i >= S.run.qs.length) { S.step = 'result'; renderStep(); window.scrollTo(0, 0); } else renderQ();
+  });
+}
+function renderQ() {
+  var r = S.run, q = r.qs[r.i], n = r.qs.length;
+  r.locked = false;
+  $('progress').textContent = 'Pergunta ' + (r.i + 1) + ' de ' + n;
+  $('live-score').textContent = r.score + (r.score === 1 ? ' acerto' : ' acertos');
+  $('bar').style.width = (r.i / n * 100) + '%';
+  $('qtext').textContent = q.q;
+  var html = '';
+  q.opts.forEach(function (o, k) {
+    html += '<button type="button" class="opt"><span class="k">' + 'ABCD'[k] + '</span><span class="t"></span><span class="tag"></span></button>';
+  });
+  $('opts').innerHTML = html;
+  Array.prototype.forEach.call($('opts').children, function (b, k) {
+    b.querySelector('.t').textContent = q.opts[k].t;
+    b.addEventListener('click', function () { choose(k); });
+  });
+  $('fb').hidden = true; $('next').hidden = true;
+}
+function choose(k) {
+  var r = S.run;
+  if (r.locked) return;
+  r.locked = true;
+  var q = r.qs[r.i], right = q.opts[k].ok;
+  if (right) r.score++; else r.miss.push(q);
+  Array.prototype.forEach.call($('opts').children, function (b, n) {
+    b.disabled = true;
+    var tag = b.querySelector('.tag');
+    if (q.opts[n].ok) { b.classList.add('ok'); tag.textContent = 'Correta'; }
+    else if (n === k) { b.classList.add('bad'); tag.textContent = 'Sua resposta'; }
+  });
+  var fb = $('fb');
+  fb.innerHTML = '<b class="' + (right ? 'ok' : 'bad') + '">' + (right ? 'Resposta correta.' : 'Resposta incorreta.') + '</b> ';
+  var span = document.createElement('span'); span.textContent = q.why; fb.appendChild(span);
+  fb.hidden = false;
+  $('live-score').textContent = r.score + (r.score === 1 ? ' acerto' : ' acertos');
+  $('next').textContent = r.i === r.qs.length - 1 ? 'Ver resultado' : 'Próxima pergunta';
+  $('next').hidden = false; $('next').focus();
+}
+function renderResult() {
+  var r = S.run, n = r.qs.length, need = needFor(n), passed = r.score >= need;
+  var pct = Math.round(r.score / n * 100), isLast = S.m === MODULES.length - 1;
+  S.attempts[S.m] = (S.attempts[S.m] || 0) + 1;
+  if (passed) {
+    S.passed[S.m] = { score: r.score, total: n, at: new Date().toISOString() };
+    if (firstOpen() >= MODULES.length && !S.firstCompletedAt) S.firstCompletedAt = new Date().toISOString();
+    renderStepper();
+  }
+  save(); persist();
+  var html = '<span class="status ' + (passed ? 'pass' : 'fail') + '">' + (passed ? 'Módulo concluído' : 'Abaixo do mínimo') + '</span>' +
+    '<div class="score"><b>' + pct + '%</b><span class="muted">' + r.score + ' de ' + n + ' acertos, tentativa ' + S.attempt + '</span></div>' +
+    '<div class="track" aria-hidden="true"><div class="fill" style="width:' + pct + '%"></div><div class="mark"></div><span class="lbl">mínimo 70%</span></div>' +
+    '<p>' + (passed
+      ? 'Você atingiu a nota mínima de 70% em ' + MODULES[S.m].title + '.' + (isLast ? ' Falta só ver a conclusão.' : ' O próximo módulo está liberado.')
+      : 'A nota mínima é 70% (' + need + ' de ' + n + ' acertos). Releia o material' + (MODULES[S.m].video ? ', reveja o vídeo' : '') + ' e refaça as perguntas para liberar o próximo módulo.') + '</p>' +
+    '<div class="review" id="review"></div><div class="actions"><button class="btn" id="act" type="button"></button></div>';
+  $('panel').innerHTML = html;
+  var rv = $('review');
+  if (r.miss.length) {
+    var h = document.createElement('h3'); h.textContent = 'Para revisar'; rv.appendChild(h);
+    r.miss.forEach(function (q) {
+      var d = document.createElement('div'); d.className = 'rv';
+      var a = document.createElement('p'); a.textContent = q.q;
+      var c = document.createElement('p'); c.className = 'a'; c.textContent = 'Resposta certa: ' + q.opts.filter(function (o) { return o.ok; })[0].t;
+      var w = document.createElement('p'); w.className = 'muted'; w.textContent = q.why;
+      d.appendChild(a); d.appendChild(c); d.appendChild(w); rv.appendChild(d);
+    });
+  }
+  var act = $('act');
+  act.textContent = passed ? (isLast ? 'Ver conclusão' : 'Ir para o módulo ' + (S.m + 2)) : 'Rever o material e refazer';
+  act.addEventListener('click', function () {
+    if (passed) { if (isLast) renderFinal(); else openModule(S.m + 1); }
+    else { S.attempt++; S.step = 'material'; renderStep(); window.scrollTo(0, 0); }
+  });
+  act.focus();
+}
+function fmt(iso) {
+  try { return new Date(iso).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }); } catch (e) { return iso || ''; }
+}
+function receiptText() {
+  var p = S.person || { name: '', email: '' };
+  var lines = ['Comprovante de conclusão', 'Treinamento de Segurança da Informação, Siggo', '', 'Nome: ' + p.name, 'E-mail: ' + p.email, 'Concluído em: ' + fmt(S.firstCompletedAt || new Date().toISOString()), ''];
+  MODULES.forEach(function (m, i) {
+    var x = S.passed[i];
+    lines.push('Módulo ' + (i + 1) + ', ' + m.title + ': ' + (x ? x.score + ' de ' + x.total + ' acertos' : 'não concluído'));
+  });
+  return lines.join('\n');
+}
+function updateStatus() {
+  var el = $('regstatus'); if (!el) return;
+  var t = {
+    ok: 'Seu registro foi enviado.',
+    pending: 'Enviando o registro…',
+    fail: 'Não foi possível enviar o registro. Copie o comprovante abaixo e envie para a TI.',
+    off: 'Copie o comprovante abaixo e envie para a TI.',
+    idle: ''
+  };
+  el.textContent = t[S.saved] || '';
+}
+var chain = Promise.resolve();
+function recordData() {
+  var mods = {};
+  MODULES.forEach(function (m, i) {
+    var x = S.passed[i];
+    if (x) mods['m' + (i + 1)] = { score: x.score, total: x.total, at: x.at || null };
+  });
+  return { name: S.person.name, email: S.person.email, startedAt: S.person.startedAt, firstCompletedAt: S.firstCompletedAt || null, updatedAt: new Date().toISOString(), modules: mods, attempts: S.attempts };
+}
+function persist() {
+  if (!S.person) return;
+  if (!CONFIG.registroUrl) { S.saved = 'off'; updateStatus(); return; }
+  S.saved = 'pending'; updateStatus();
+  var body = JSON.stringify(recordData());
+  chain = chain.then(function () {
+    // text/plain + no-cors evita a verificação prévia (CORS); o navegador não consegue ler a resposta.
+    return fetch(CONFIG.registroUrl, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=UTF-8' }, body: body });
+  }).then(function () { S.saved = 'ok'; updateStatus(); })
+    .catch(function () { S.saved = 'fail'; updateStatus(); });
+}
+function renderFinal() {
+  var html = '<tr><th>Módulo</th><th>Acertos</th></tr>';
+  MODULES.forEach(function (m, i) {
+    var p = S.passed[i];
+    html += '<tr><td>' + (i + 1) + '. ' + m.title + '</td><td>' + (p ? p.score + ' de ' + p.total : '—') + '</td></tr>';
+  });
+  $('sum').innerHTML = html;
+  $('comp').textContent = receiptText();
+  updateStatus();
+  showView('final');
+}
+function renderHomeNote() {
+  $('regnote').textContent = CONFIG.registroUrl
+    ? 'Seu registro é enviado automaticamente ao concluir cada módulo.'
+    : 'Seu progresso fica salvo só neste navegador. No final, você copia um comprovante para enviar à TI.';
+}
+function renderHome() {
+  var open = firstOpen();
+  if (S.person) { $('f-name').value = S.person.name || ''; $('f-email').value = S.person.email || ''; }
+  $('go').textContent = open === 0 ? 'Começar' : 'Continuar no módulo ' + (open + 1);
+  $('reset').hidden = open === 0;
+  renderHomeNote();
+  showView('home');
+}
+function reset() { S.passed = {}; S.attempts = {}; S.saved = 'idle'; save(); renderHome(); }
+function validate() {
+  var n = $('f-name').value.trim(), e = $('f-email').value.trim(), ok = true;
+  $('e-name').textContent = ''; $('e-email').textContent = '';
+  if (n.length < 3 || n.indexOf(' ') < 0) { $('e-name').textContent = 'Informe nome e sobrenome.'; ok = false; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) { $('e-email').textContent = 'Informe um e-mail válido.'; ok = false; }
+  return ok ? { name: n, email: e } : null;
+}
+$('idform').addEventListener('submit', function (ev) {
+  ev.preventDefault();
+  var p = validate(); if (!p) return;
+  var prev = S.person;
+  S.person = { name: p.name, email: p.email, startedAt: (prev && prev.startedAt) || new Date().toISOString() };
+  save(); persist();
+  var o = firstOpen();
+  if (o >= MODULES.length) renderFinal(); else openModule(o);
+});
+$('reset').addEventListener('click', reset);
+$('restart').addEventListener('click', reset);
+$('copy').addEventListener('click', function () {
+  var b = $('copy'), txt = receiptText();
+  function ok() { b.textContent = 'Copiado'; setTimeout(function () { b.textContent = 'Copiar comprovante'; }, 2000); }
+  function fallback() {
+    var r = document.createRange(); r.selectNodeContents($('comp'));
+    var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+    b.textContent = 'Texto selecionado: copie com Ctrl+C';
+  }
+  try { navigator.clipboard.writeText(txt).then(ok, fallback); } catch (e) { fallback(); }
+});
+
+load();
+if (S.person && firstOpen() >= MODULES.length) renderFinal(); else renderHome();
+renderHomeNote();
+</script>
+</body>
+</html>
