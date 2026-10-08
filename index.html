@@ -289,7 +289,15 @@ var $ = function (id) { return document.getElementById(id); };
 var S = { view: 'home', m: 0, step: 'material', run: null, passed: {}, attempt: 1, attempts: {}, person: null, firstCompletedAt: null, saved: 'idle' };
 // CONFIGURAÇÃO (TI): endereço que recebe o registro de conclusão (por exemplo, o URL do gatilho HTTP de um fluxo do Power Automate).
 // Deixe vazio para não enviar nada: nesse caso a pessoa copia o comprovante e envia à TI.
-var CONFIG = { registroUrl: '' };
+var CONFIG = {
+  registroUrl: '',
+  // Google Forms (opcional): cole a URL do formulário terminando em /formResponse e o código "entry.NNN" de cada pergunta.
+  googleForm: {
+    url: '',
+    fields: { name: '', email: '', m1: '', m2: '', m3: '', tentativas: '', situacao: '', enviadoEm: '' }
+  }
+};
+function hasRegistro() { return !!(CONFIG.registroUrl || (CONFIG.googleForm && CONFIG.googleForm.url)); }
 
 function load() {
   try {
@@ -507,14 +515,29 @@ function recordData() {
   });
   return { name: S.person.name, email: S.person.email, startedAt: S.person.startedAt, firstCompletedAt: S.firstCompletedAt || null, updatedAt: new Date().toISOString(), modules: mods, attempts: S.attempts };
 }
+function googleBody(d) {
+  var f = CONFIG.googleForm.fields, p = new URLSearchParams();
+  var put = function (k, v) { if (f[k]) p.append(f[k], v == null ? '' : String(v)); };
+  var sc = function (m) { return m ? m.score + ' de ' + m.total : ''; };
+  var done = Object.keys(d.modules).length;
+  put('name', d.name); put('email', d.email);
+  put('m1', sc(d.modules.m1)); put('m2', sc(d.modules.m2)); put('m3', sc(d.modules.m3));
+  put('tentativas', Object.keys(d.attempts || {}).map(function (k) { return d.attempts[k]; }).join(' / '));
+  put('situacao', done >= MODULES.length ? 'Concluído' : done + ' de ' + MODULES.length + ' módulos');
+  put('enviadoEm', d.updatedAt);
+  return p;
+}
 function persist() {
   if (!S.person) return;
-  if (!CONFIG.registroUrl) { S.saved = 'off'; updateStatus(); return; }
+  if (!hasRegistro()) { S.saved = 'off'; updateStatus(); return; }
   S.saved = 'pending'; updateStatus();
-  var body = JSON.stringify(recordData());
+  var data = recordData();
   chain = chain.then(function () {
+    var jobs = [];
     // text/plain + no-cors evita a verificação prévia (CORS); o navegador não consegue ler a resposta.
-    return fetch(CONFIG.registroUrl, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=UTF-8' }, body: body });
+    if (CONFIG.registroUrl) jobs.push(fetch(CONFIG.registroUrl, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=UTF-8' }, body: JSON.stringify(data) }));
+    if (CONFIG.googleForm && CONFIG.googleForm.url) jobs.push(fetch(CONFIG.googleForm.url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: googleBody(data) }));
+    return Promise.all(jobs);
   }).then(function () { S.saved = 'ok'; updateStatus(); })
     .catch(function () { S.saved = 'fail'; updateStatus(); });
 }
@@ -530,7 +553,7 @@ function renderFinal() {
   showView('final');
 }
 function renderHomeNote() {
-  $('regnote').textContent = CONFIG.registroUrl
+  $('regnote').textContent = hasRegistro()
     ? 'Seu registro é enviado automaticamente ao concluir cada módulo.'
     : 'Seu progresso fica salvo só neste navegador. No final, você copia um comprovante para enviar à TI.';
 }

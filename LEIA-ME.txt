@@ -35,6 +35,20 @@ Observações:
 - Nome e e-mail são dados pessoais (LGPD). Guarde em local com acesso restrito.
 - Não testado com o fluxo de vocês: faça um teste de ponta a ponta antes de divulgar.
 
+REGISTRO NO GOOGLE FORMS (PLANILHA AUTOMÁTICA)
+1. Em forms.google.com, crie um formulário com 8 perguntas de "Resposta curta", nesta ordem: Nome, E-mail, Módulo 1, Módulo 2, Módulo 3, Tentativas, Situação, Enviado em.
+2. Na aba "Respostas", clique em "Vincular ao Planilhas" para criar a planilha.
+3. Menu de três pontos > "Receber link pré-preenchido". Preencha cada pergunta com um texto qualquer (ex.: 111, 222...), clique em "Receber link" e copie o link.
+4. No link aparecem códigos "entry.NNNNNNN=" (um por pergunta, na ordem criada). Anote cada código.
+5. Abra o index.html, procure "googleForm" e preencha:
+   - url: o endereço do formulário trocando "viewform..." por "formResponse" (termina em /formResponse)
+   - fields: o código entry.NNNNNNN de cada pergunta (name, email, m1, m2, m3, tentativas, situacao, enviadoEm)
+6. Suba o index.html no GitHub e teste com um e-mail seu. A linha aparece na planilha em alguns segundos.
+Observações:
+- Cada módulo concluído gera uma nova linha. A linha mais recente de cada e-mail é a situação atual. Filtre pela coluna Situação = "Concluído" para ver quem terminou.
+- O formulário não pode exigir login nem limitar a uma resposta, senão o envio do site é recusado.
+- O navegador não confirma o recebimento. Faça o teste de ponta a ponta antes de divulgar.
+
 MANUTENÇÃO
 - Trocar um vídeo: substitua o arquivo na pasta media mantendo o mesmo nome.
 - Alterar textos e perguntas: edite o bloco MODULES dentro do index.html. A nota mínima está em PASS_RATE (0.7 = 70%).
