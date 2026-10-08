@@ -188,10 +188,12 @@ h3.sub { margin: 0; font-size: 18px; color: var(--brand); }
     <p>Você atingiu a nota mínima de 70% em todos os módulos. Leve esses hábitos para o dia a dia e avise a TI sempre que desconfiar de algo.</p>
     <table class="sum" id="sum"></table>
     <p class="regstatus" id="regstatus" aria-live="polite"></p>
-    <h3 class="sub">Comprovante</h3>
-    <pre class="comp" id="comp"></pre>
-    <div class="actions">
+    <div id="receipt" hidden>
+      <h3 class="sub">Comprovante</h3>
+      <pre class="comp" id="comp"></pre>
       <button class="btn" id="copy" type="button">Copiar comprovante</button>
+    </div>
+    <div class="actions">
       <button class="btn ghost" id="restart" type="button">Refazer o treinamento</button>
     </div>
   </section>
@@ -215,7 +217,7 @@ var MODULES = [
     video: 'media/senhas-fortes.mp4',
     questions: [
       { q: 'Qual destas senhas é a mais forte?',
-        opts: ['123456', 'siggo2026', 'Cafe-Chuva-Violao-Nuvem#7', 'Maria15031990'], a: 2,
+        opts: ['123456', 'siggo2026', 'Livro-Ponte-Sol-Rio#58', 'Maria15031990'], a: 2,
         why: 'Ela é longa e mistura maiúsculas, minúsculas, número e símbolo, sem relação com dados pessoais.' },
       { q: 'Por que não se deve usar a mesma senha em vários serviços?',
         opts: ['Porque fica mais difícil de digitar', 'Porque, se um serviço vazar, os outros também ficam expostos', 'Porque os sites bloqueiam senhas repetidas', 'Não há problema nisso'], a: 1,
@@ -293,8 +295,8 @@ var CONFIG = {
   registroUrl: '',
   // Google Forms (opcional): cole a URL do formulário terminando em /formResponse e o código "entry.NNN" de cada pergunta.
   googleForm: {
-    url: '',
-    fields: { name: '', email: '', m1: '', m2: '', m3: '', tentativas: '', situacao: '', enviadoEm: '' }
+    url: 'https://docs.google.com/forms/d/e/1FAIpQLSdY96zk0DreER0WgGkDhRfgkRj8O113PX2m3v7pilgxrMGqMA/formResponse',
+    fields: { name: 'entry.1849257531', email: 'entry.39922277', m1: 'entry.2026674375', m2: 'entry.1068302242', m3: 'entry.1433650533', tentativas: 'entry.2025298095', situacao: 'entry.1381028427', enviadoEm: 'entry.1509540312' }
   }
 };
 function hasRegistro() { return !!(CONFIG.registroUrl || (CONFIG.googleForm && CONFIG.googleForm.url)); }
@@ -382,7 +384,17 @@ function renderVideo() {
     '<div class="actions"><button class="btn" id="toq" type="button" disabled>Ir para as perguntas</button><button class="btn ghost" id="back" type="button">Voltar ao material</button></div>';
   var v = $('vid'), toq = $('toq');
   function unlock(msg) { toq.disabled = false; $('vhint').textContent = msg; toq.focus(); }
-  v.addEventListener('ended', function () { unlock('Vídeo concluído. As perguntas estão liberadas.'); });
+  // Impede adiantar o vídeo: só deixa voltar ou avançar até o ponto já assistido.
+  var maxSeen = 0, seeking = false;
+  v.addEventListener('timeupdate', function () { if (!v.seeking && v.currentTime > maxSeen && v.currentTime - maxSeen < 1.5) maxSeen = v.currentTime; });
+  v.addEventListener('seeking', function () {
+    if (seeking) return;
+    if (v.currentTime > maxSeen + 0.5) { seeking = true; v.currentTime = maxSeen; $('vhint').textContent = 'Não é possível adiantar o vídeo. Assista até o final para liberar as perguntas.'; setTimeout(function () { seeking = false; }, 100); }
+  });
+  v.addEventListener('ended', function () {
+    if (maxSeen < v.duration - 1.5) { v.currentTime = maxSeen; return; }
+    unlock('Vídeo concluído. As perguntas estão liberadas.');
+  });
   v.addEventListener('error', function () { unlock('Não foi possível reproduzir o vídeo neste navegador. Você pode seguir para as perguntas.'); });
   toq.addEventListener('click', function () { S.step = 'quiz'; startQuiz(); window.scrollTo(0, 0); });
   $('back').addEventListener('click', function () { S.step = 'material'; renderStep(); });
@@ -498,13 +510,14 @@ function receiptText() {
 function updateStatus() {
   var el = $('regstatus'); if (!el) return;
   var t = {
-    ok: 'Seu registro foi enviado.',
+    ok: 'Seu resultado foi registrado automaticamente. Você não precisa enviar nada.',
     pending: 'Enviando o registro…',
     fail: 'Não foi possível enviar o registro. Copie o comprovante abaixo e envie para a TI.',
     off: 'Copie o comprovante abaixo e envie para a TI.',
     idle: ''
   };
   el.textContent = t[S.saved] || '';
+  var rc = $('receipt'); if (rc) rc.hidden = !(S.saved === 'fail' || S.saved === 'off');
 }
 var chain = Promise.resolve();
 function recordData() {
@@ -555,7 +568,7 @@ function renderFinal() {
 function renderHomeNote() {
   $('regnote').textContent = hasRegistro()
     ? 'Seu registro é enviado automaticamente ao concluir cada módulo.'
-    : 'Seu progresso fica salvo só neste navegador. No final, você copia um comprovante para enviar à TI.';
+    : 'Seu progresso fica salvo só neste navegador.';
 }
 function renderHome() {
   var open = firstOpen();
